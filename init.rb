@@ -1,0 +1,1 @@
+require 'accessible_record'

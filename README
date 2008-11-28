@@ -1,0 +1,57 @@
+AccessibleRecord
+================
+
+This plugin allows for simple nested mass-assignment.
+It can be applied to :belongs_to, :has_one, and :has_many associations.
+
+The algorithm that is used to update a model's :has_many association requires that an Array be
+passed in for that association.  If an empty Array (nil or omitted implies empty Array) is passed in, then
+all records in the has_many will be removed.  If the passed Array length is greater than the current # of records,
+then new ones are added.  If it is less than the current #, then records will be removed.
+
+
+Example
+=======
+
+In a model that has an association which should have it's attributes updated through mass-assigned,
+call has_accessible as follows:
+
+class Foo < ActiveRecord::Base
+  belongs_to :bar
+  has_one :star
+  
+  has_accessible :bar, :star
+end
+
+class Bar < ActiveRecord::Base
+  validates_presence_of :name
+end
+
+class Car < ActiveRecord::Base
+  validates_presence_of :time
+end
+
+class Star < ActiveRecord::Base
+  has_many :cars
+
+  has_accessible :cars
+end
+
+
+Update this record with a mass-assignment hash as follows:
+
+Foo.first.update_attributes({
+  :bar => { :name => 'My Bar' },
+  :star => {
+    :cars => [ { :time => Time.now }, { :time => 1.day.ago } ]
+  }
+})
+
+
+You can view the accessible associations as follows:
+
+Foo.accessible_associations
+>> [:bar, :star]
+
+
+Copyright (c) 2008 Glenn Powell, released under the MIT license
