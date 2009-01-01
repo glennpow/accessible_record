@@ -1,24 +1,26 @@
 module AccessibleRecord
   def self.included(base)
-    base.extend(MacroMethods)              
+    base.extend(MacroMethods)
   end
   
   module MacroMethods
     def has_accessible(*args)
-      write_inheritable_attribute(:accessible_associations, args)
-
       unless self.is_a? AccessibleRecord::ClassMethods
         extend AccessibleRecord::ClassMethods
         class_eval do
           include AccessibleRecord::InstanceMethods
         end
       end
+
+      self.accessible_associations << args
     end
   end
   
   module ClassMethods
     def accessible_associations
-      read_inheritable_attribute(:accessible_associations)
+      associations = read_inheritable_attribute(:accessible_associations)
+      write_inheritable_attribute(:accessible_associations, associations = []) if associations.nil?
+      associations
     end
   end
 
@@ -92,4 +94,4 @@ module AccessibleRecord
   end
 end
 
-ActiveRecord::Base.send(:include, AccessibleRecord)
+ActiveRecord::Base.send(:include, AccessibleRecord) if defined?(ActiveRecord::Base)
