@@ -26,7 +26,7 @@ module AccessibleRecord
 
   module InstanceMethods
     def attributes=(attributes)
-      attributes.deep_symbolize_keys!
+      attributes = attributes.deep_symbolize_keys
       self.class.read_inheritable_attribute(:accessible_associations).each do |attribute|
         if association = self.class.reflect_on_association(attribute)
           case association.macro
